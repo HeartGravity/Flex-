@@ -1,0 +1,12 @@
+//3.txt
+
+a b c
+
+int float char
+
+
+ab bc ac
+
++ - * /
+
+abc

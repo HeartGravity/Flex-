@@ -68,11 +68,11 @@ void report_error(const char* msg, int lineno);
 DIGIT [0-9]
 NONZERO [1-9]
 LETTER [a-zA-Z]
-KEYWORD if|else|while|break|continue|return|int|float|const|void|char
-OPERATOR "+"|"-"|"*"|"/"|"%"
+KEYWORD if|else|while|break|continue|return|int|float|const|void|char|for
+OPERATOR "+"|"-"|"*"|"/"|"%"|"--"|"++"
 COMPARATOR "=="|"!="|"<="|">="|"<"|">"
 LOGICAL "&&"|"||"|"!"
-ASSIGN "="
+ASSIGN "="|"+="|"-="|"*="|"/="
 OCTAL_DIGIT [0-7]
 OCTAL_CONST 0{OCTAL_DIGIT}+
 ILLEGAL_OCTAL 0{DIGIT}+
@@ -114,15 +114,15 @@ ILLEGAL_IDENTIFIER {DIGIT}+({LETTER}|{DIGIT}|_)+
 <CHAR>.    { char_count++; error_count++; report_error("Invalid char constant", line); return 0; }
 <CHAR><<EOF>>    { report_error("Unclosed char literal", line); error_count++; return 0; }
 
-"//"        { printf("Line comment begins\n"); BEGIN(COMMENT_LINE); char_count += 1; }
-"/*"        { printf("Block comment begins\n"); BEGIN(COMMENT_BLOCK); char_count += 1;}
+"//"        { BEGIN(COMMENT_LINE);}
+"/*"        { BEGIN(COMMENT_BLOCK);}
 
-<COMMENT_LINE>\n    { line++; char_count++; printf("Line comment ends\n"); BEGIN(INITIAL); }
-<COMMENT_LINE>.     { char_count++; }
+<COMMENT_LINE>\n    { line++; BEGIN(INITIAL); }
+<COMMENT_LINE>.     { }
 
-<COMMENT_BLOCK>"*/"     { char_count += 2; printf("Block comment ends\n"); BEGIN(INITIAL); }
-<COMMENT_BLOCK>\n   { line++; char_count++; }
-<COMMENT_BLOCK>.    {char_count++; }
+<COMMENT_BLOCK>"*/"     { BEGIN(INITIAL); }
+<COMMENT_BLOCK>\n   { line++; }
+<COMMENT_BLOCK>.    { }
 <COMMENT_BLOCK><<EOF>>  {report_error("Unclosed block comment", line); error_count++; return 0; }
 
 {KEYWORD}   { printf("<\033[1;32mKEYWORD\033[0m,%s>\n", yytext); keyword_count++; char_count+=1; return KEYWORD;}
@@ -143,8 +143,9 @@ ILLEGAL_IDENTIFIER {DIGIT}+({LETTER}|{DIGIT}|_)+
 {DEC_CONST}     { printf("<\033[1;32mDEC_CONST\033[0m,%s>\n", yytext); int_const_count++; char_count+=1; return DEC_CONST;}
 {ILLEGAL_IDENTIFIER}   { report_error("Illegal identifier", line); error_count++; char_count+=1; return ILLEGAL_IDENTIFIER;}
 
+^[ \t]*\n      { /* 空行：不增加行数 */ }
 [ \t]+   {}
-\n      {line++;}
+\n      { line++; }
 .       {error_count++; return NONE;}
 
 %%
@@ -174,16 +175,16 @@ int main(int argc, char** argv){
     }
 
     // 输出统计结果
-    printf("\n%d行\n", line);
-    printf("%d个词语\n", char_count);
-    printf("%d关键字\n", keyword_count);
-    printf("%d标识符\n", identifier_count);
-    printf("%d常数（整数）\n", int_const_count);
-    printf("%d常数（浮点数）\n", float_const_count);
-    printf("%d赋值\n", assign_op)
-    printf("%d运算符\n", operator_count);
-    printf("%d比较符\n", comparator_count);
-    printf("%d分隔符\n", delimiter_count);
+    printf("\n%dlines\n", line);
+    printf("%dwords\n", char_count);
+    printf("%dkeywords\n", keyword_count);
+    printf("%didentifiers\n", identifier_count);
+    printf("%dconst int\n", int_const_count);
+    printf("%dconst float\n", float_const_count);
+    printf("%dassign\n", assign_op);
+    printf("%doperator\n", operator_count);
+    printf("%dcomparator\n", comparator_count);
+    printf("%ddelimeter\n", delimiter_count);
     if(error_count > 0){
         fprintf(stderr, "\033[1;31mCompilation failed with %d errors.\033[0m\n", error_count);
     }

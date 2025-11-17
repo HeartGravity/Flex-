@@ -1,0 +1,10 @@
+//2.txt
+void sum(int limit){
+    int s=0;
+    for(int i=0;i<limit;){
+        s+=i;
+        i*=2;
+    }
+    s;//nothing
+    return s;
+}

@@ -1,0 +1,14 @@
+//3.txt
+{
+ int i = 100.142;
+ {int val = 2.1;
+//gooooooo
+
+ while (i > 0)
+ {
+  val = val * i;
+  i--;
+ }
+ }
+ return 142857143;
+}

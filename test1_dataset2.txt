@@ -1,0 +1,10 @@
+//2.txt
+int a;
+for(;;){
+  while(a){}
+  if(a<2){
+    a=1;
+  }else{
+    a=0;
+  }
+}
