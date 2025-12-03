@@ -1,0 +1,6 @@
+//测试错误的数据集2
+int x = 9;
+x = x - 1;
+float y = 0..02
+double hex_z = 0x18H;
+double oct_p = 0A11;

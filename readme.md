@@ -46,6 +46,12 @@ win_bison --version
 
 --test2_dataset4.txt 问题二的测试集4
 
+err_dataset1.txt 测试错误的数据集1
+
+err_dataset2.txt 测试错误的数据集2
+
+err_dataset3.txt 测试错误的数据集3
+
 --unistd.h 项目运行需要的头文件
 
 ~~由于项目已经使用flex完成了程序文件的生成和程序的编译，以下的命令在该文件夹中用不到~~
